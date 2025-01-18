@@ -15,6 +15,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" Version="9.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JA_CSharp\JA_CSharp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="miku.bmp" />
   </ItemGroup>
 

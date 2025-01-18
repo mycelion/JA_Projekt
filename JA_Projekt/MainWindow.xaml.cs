@@ -14,6 +14,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.VisualBasic;
 using Microsoft.Win32;
+using System.Drawing;
+
+using JA_CSharp;
 
 namespace JA_Projekt
 {
@@ -22,7 +25,6 @@ namespace JA_Projekt
     /// </summary>
     public partial class MainWindow : Window
     {
-        
 
         public MainWindow()
         {
@@ -34,14 +36,6 @@ namespace JA_Projekt
             [DllImport(@"E:\JAProjekt\JA_Projekt\x64\Debug\JA_Asm.dll")]
             static extern int MyProc1(int a, int b);
 
-            [DllImport(@"E:\JAProjekt\JA_Projekt\x64\Debug\JA_C.dll")]
-            static extern int test(int a, int b);
-<<<<<<< HEAD
-            static extern void loadBitmapAndProcess(string filename);
-=======
-            static extern string bitmapConvert(string source);
->>>>>>> 33acd77f917eeec40b1ee4d0686620a956b1a2be
-
             DateTime dateTimePrev = DateTime.Now;
             int wynik;
 
@@ -51,11 +45,10 @@ namespace JA_Projekt
             }
             else
             {
-                wynik = test(3, 4);
-<<<<<<< HEAD
-                loadBitmapAndProcess("C:\\Users\\Mycelion\\Pictures\\miku.bmp");
-=======
->>>>>>> 33acd77f917eeec40b1ee4d0686620a956b1a2be
+                CSharp_Class cSharp = new CSharp_Class();
+
+                resultPic.Source = cSharp.AddVignette();
+                wynik = cSharp.test(3, 4);
             }
 
             DateTime dateTimeNext = DateTime.Now;
@@ -76,7 +69,6 @@ namespace JA_Projekt
 
             if (result == true)
             {
-                string filename = imgDialog.FileName;
                 sourcePic.Source = new BitmapImage(new Uri(imgDialog.FileName));
             }
         }
