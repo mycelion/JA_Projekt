@@ -9,5 +9,6 @@
 
 // w tym miejscu dodaj nagłówki, które mają być wstępnie kompilowane
 #include "framework.h"
+#include "JA_C.h"
 
 #endif //PCH_H

@@ -36,7 +36,11 @@ namespace JA_Projekt
 
             [DllImport(@"E:\JAProjekt\JA_Projekt\x64\Debug\JA_C.dll")]
             static extern int test(int a, int b);
+<<<<<<< HEAD
             static extern void loadBitmapAndProcess(string filename);
+=======
+            static extern string bitmapConvert(string source);
+>>>>>>> 33acd77f917eeec40b1ee4d0686620a956b1a2be
 
             DateTime dateTimePrev = DateTime.Now;
             int wynik;
@@ -48,7 +52,10 @@ namespace JA_Projekt
             else
             {
                 wynik = test(3, 4);
+<<<<<<< HEAD
                 loadBitmapAndProcess("C:\\Users\\Mycelion\\Pictures\\miku.bmp");
+=======
+>>>>>>> 33acd77f917eeec40b1ee4d0686620a956b1a2be
             }
 
             DateTime dateTimeNext = DateTime.Now;
