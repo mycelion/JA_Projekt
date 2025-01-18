@@ -1,4 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.VisualBasic;
+using Microsoft.Win32;
 
 namespace JA_Projekt
 {
@@ -17,20 +22,56 @@ namespace JA_Projekt
     /// </summary>
     public partial class MainWindow : Window
     {
-        [DllImport(@"E:\JAProjekt\JA_Projekt\x64\Debug\JA_Asm.dll")]
-        static extern int MyProc1(int a, int b);
+        
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void btnClick(object sender, RoutedEventArgs e)
+        private void convert(object sender, RoutedEventArgs e)
         {
+            [DllImport(@"E:\JAProjekt\JA_Projekt\x64\Debug\JA_Asm.dll")]
+            static extern int MyProc1(int a, int b);
+
+            [DllImport(@"E:\JAProjekt\JA_Projekt\x64\Debug\JA_C.dll")]
+            static extern int test(int a, int b);
+            static extern void loadBitmapAndProcess(string filename);
+
+            DateTime dateTimePrev = DateTime.Now;
             int wynik;
-            wynik = MyProc1(1, 2);
+
+            if (asembler.IsChecked ?? false)
+            {
+                wynik = MyProc1(1, 2);
+            }
+            else
+            {
+                wynik = test(3, 4);
+                loadBitmapAndProcess("C:\\Users\\Mycelion\\Pictures\\miku.bmp");
+            }
+
+            DateTime dateTimeNext = DateTime.Now;
+            TimeSpan difference = dateTimeNext - dateTimePrev;
+
             output.Content = wynik;
+            time.Content = difference.TotalMilliseconds;
         }
 
+        private void changePicture(object sender, RoutedEventArgs e)
+        {
+            var imgDialog = new OpenFileDialog()
+            {
+                Filter = "BMP Files (*.bmp)|*.bmp"
+            };
+
+            Nullable<bool> result = imgDialog.ShowDialog();
+
+            if (result == true)
+            {
+                string filename = imgDialog.FileName;
+                sourcePic.Source = new BitmapImage(new Uri(imgDialog.FileName));
+            }
+        }
     }
 }

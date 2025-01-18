@@ -7,7 +7,14 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Label Name="output">Output</Label>
-        <Button Name="baton" Click="btnClick" Content="Kliknij" Margin="51,45,578,313"></Button>
+        <Label Name="output" Width="150" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="574,262,0,0">Output</Label>
+        <Label Name="time" Width="120" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="574,232,0,0">Czas</Label>
+
+        <Button Name="convertButton" Click="convert" Content="Kliknij" Width="200" Height="75" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="51,54,0,0"/>
+        <Button Name="picChangeButton" Click="changePicture" Content="Zmien obraz" Width="200" Height="75" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="51,142,0,0"/>
+        <CheckBox Name="asembler" Width="150" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="51,232,0,0">Asembler?</CheckBox>
+
+        <Image Source="/miku.bmp" Width="200" Height="200" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,17,0,0" Name="sourcePic"/>
+        <Image Source="/miku.bmp" Width="200" Height="200" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="574,17,0,0" Name="resultPic"/>
     </Grid>
 </Window>

@@ -9,4 +9,13 @@
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="miku.bmp" />
+    <None Remove="miku.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="miku.bmp" />
+  </ItemGroup>
+
 </Project>
