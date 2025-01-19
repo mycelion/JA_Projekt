@@ -38,6 +38,8 @@ namespace JA_Projekt
 
             DateTime dateTimePrev = DateTime.Now;
             int wynik;
+            float radius = (float)radiusSlider.Value;
+            float power = (float)powerSlider.Value;
 
             if (asembler.IsChecked ?? false)
             {
@@ -47,14 +49,27 @@ namespace JA_Projekt
             {
                 CSharp_Class cSharp = new CSharp_Class();
 
-                resultPic.Source = cSharp.AddVignette();
-                wynik = cSharp.test(3, 4);
+                // Get the source image from sourcePic
+                BitmapSource sourceBitmap = sourcePic.Source as BitmapSource;
+
+                if (sourceBitmap == null)
+                {
+                    MessageBox.Show("No source image is loaded.");
+                    return;
+                }
+
+                // Convert BitmapSource to System.Drawing.Image
+                System.Drawing.Image drawingImage = BitmapSourceToDrawingImage(sourceBitmap);
+
+                // Apply vignette
+                BitmapImage vignetteImage = cSharp.AddVignette(drawingImage, radius, power);
+                resultPic.Source = vignetteImage;
             }
 
             DateTime dateTimeNext = DateTime.Now;
             TimeSpan difference = dateTimeNext - dateTimePrev;
 
-            output.Content = wynik;
+            output.Content = powerSlider.Value;
             time.Content = difference.TotalMilliseconds;
         }
 
@@ -70,6 +85,18 @@ namespace JA_Projekt
             if (result == true)
             {
                 sourcePic.Source = new BitmapImage(new Uri(imgDialog.FileName));
+            }
+        }
+
+        private System.Drawing.Image BitmapSourceToDrawingImage(BitmapSource bitmapSource)
+        {
+            using (var memoryStream = new System.IO.MemoryStream())
+            {
+                BitmapEncoder encoder = new BmpBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+                encoder.Save(memoryStream);
+                memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
+                return System.Drawing.Image.FromStream(memoryStream);
             }
         }
     }

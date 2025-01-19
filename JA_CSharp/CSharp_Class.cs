@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Reflection.Emit;
 using System.Windows.Media.Effects;
 using System.Drawing.Imaging;
+using System.Windows.Media.Media3D;
 
 namespace JA_CSharp
 {
@@ -19,16 +20,59 @@ namespace JA_CSharp
             return a + b;
         }
 
-    public Image AddVignette(Image srcImage)
+        public BitmapImage AddVignette(System.Drawing.Image srcImage, float radius, float power)
         {
-            Bitmap targetImg = new Bitmap(srcImage.Width, srcImage.Height);
+            // Convert the System.Drawing.Image to a Bitmap
+            System.Drawing.Bitmap targetImg = new System.Drawing.Bitmap(srcImage);
+
+            int width = targetImg.Width;
+            int height = targetImg.Height;
 
             using (Graphics g = Graphics.FromImage(targetImg))
             {
-                g.Clear(Color.Black);
+                // Create a radial gradient brush to simulate the vignette effect
+                using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
+                {
+                    // Adjust the ellipse size based on the radius parameter
+                    float ellipseWidth = width * radius;
+                    float ellipseHeight = height * radius;
+                    float ellipseX = (width - ellipseWidth) / 2;
+                    float ellipseY = (height - ellipseHeight) / 2;
+
+                    path.AddEllipse(ellipseX, ellipseY, ellipseWidth, ellipseHeight);
+
+                    using (var brush = new System.Drawing.Drawing2D.PathGradientBrush(path))
+                    {
+                        // Calculate the transparency level based on the power parameter
+                        byte alpha = (byte)(255 * Math.Clamp(power, 0, 1)); // Ensure power is clamped between 0 and 1
+
+                        // Center color is fully transparent, edges are dark with the chosen opacity
+                        brush.CenterColor = System.Drawing.Color.FromArgb(0, 0, 0, 0); // Fully transparent
+                        brush.SurroundColors = new[] { System.Drawing.Color.FromArgb(alpha, 0, 0, 0) };
+
+                        // Set the center point of the gradient
+                        brush.CenterPoint = new System.Drawing.PointF(width / 2, height / 2);
+
+                        // Draw the gradient overlay
+                        g.FillRectangle(brush, 0, 0, width, height);
+                    }
+                }
             }
 
-            return targetImg;
+            // Convert the Bitmap to a BitmapImage for WPF
+            using (var memoryStream = new System.IO.MemoryStream())
+            {
+                targetImg.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Bmp);
+                memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
+
+                BitmapImage bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = memoryStream;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+
+                return bitmapImage;
+            }
         }
     }
 }
