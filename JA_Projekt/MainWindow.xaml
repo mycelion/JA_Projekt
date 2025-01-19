@@ -15,7 +15,7 @@
         <CheckBox Name="asembler" Width="150" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="51,232,0,0">Asembler?</CheckBox>
 
         <Slider Name="threadSlider" Width="200" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="51,275,0,0" Minimum="1" Maximum="64" Value="4" SmallChange="1" LargeChange="4" TickPlacement="BottomRight"/>
-        <Slider Name="radiusSlider" Width="200" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="51,325,0,0" Minimum="0" Maximum="2" Value="1" SmallChange="0.1" LargeChange="1" TickPlacement="BottomRight"/>
+        <Slider Name="radiusSlider" Width="200" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="51,325,0,0" Minimum="0.1" Maximum="2" Value="1" SmallChange="0.1" LargeChange="1" TickPlacement="BottomRight"/>
         <Slider Name="powerSlider" Width="200" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="51,375,0,0" Minimum="0" Maximum="1" Value="0.5" SmallChange="0.01" LargeChange="0.1" TickPlacement="BottomRight" TickFrequency="0.1"/>
 
         <Image Source="/miku.bmp" Width="200" Height="200" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,17,0,0" Name="sourcePic"/>

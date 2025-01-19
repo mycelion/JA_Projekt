@@ -35,17 +35,27 @@ namespace JA_CSharp
                 {
                     // Adjust the ellipse size based on the radius parameter
                     float ellipseWidth = width * radius;
-                    float ellipseHeight = height * radius;
+                    float ellipseHeight = width * radius;
                     float ellipseX = (width - ellipseWidth) / 2;
                     float ellipseY = (height - ellipseHeight) / 2;
 
                     path.AddEllipse(ellipseX, ellipseY, ellipseWidth, ellipseHeight);
 
+                    // Calculate the transparency level based on the power parameter
+                    byte alpha = (byte)(255 * Math.Clamp(power, 0, 1)); // Ensure power is clamped between 0 and 1
+
+                    using (Region region = new Region())
+                    {
+                        // Set the region to everything outside the circle
+                        region.MakeInfinite();
+                        region.Exclude(path);
+
+                        Brush brush = new SolidBrush(Color.FromArgb(alpha, 0, 0, 0));
+                        g.FillRegion(brush, region);
+                    }
+
                     using (var brush = new System.Drawing.Drawing2D.PathGradientBrush(path))
                     {
-                        // Calculate the transparency level based on the power parameter
-                        byte alpha = (byte)(255 * Math.Clamp(power, 0, 1)); // Ensure power is clamped between 0 and 1
-
                         // Center color is fully transparent, edges are dark with the chosen opacity
                         brush.CenterColor = System.Drawing.Color.FromArgb(0, 0, 0, 0); // Fully transparent
                         brush.SurroundColors = new[] { System.Drawing.Color.FromArgb(alpha, 0, 0, 0) };
