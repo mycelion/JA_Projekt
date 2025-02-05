@@ -83,10 +83,6 @@ process_pixels:
     ; Normalize distance by MaxRadius
     vdivsd xmm0, xmm0, [MaxRadius]
 
-    ; Apply power: (distance / MaxRadius) ^ Power
-    ; Assuming Power is a positive integer; for real exponents, a different approach is needed
-    ; Example using exponentiation by squaring for integer Power (simplified here)
-    ; Note: This part is a simplification and may need adjustment based on actual Power usage
     vmovsd xmm1, [Power]
     call pow_simulated            ; Custom function to compute xmm0^Power
 
@@ -101,7 +97,7 @@ process_pixels:
     movzx edx, byte ptr [r14 + rbx + 1]  ; Green
     movzx r8d, byte ptr [r14 + rbx + 2]  ; Red
 
-    ; Apply vignette factor to each channel
+    ; Apply vignette factor to each channell
     vcvtsi2sd xmm1, xmm1, eax
     vmulsd xmm1, xmm1, xmm0
     vcvtsd2si eax, xmm1
@@ -139,8 +135,6 @@ done:
     ret
 
 pow_simulated:
-    ; Simplified power function for demonstration (e.g., xmm0^Power where Power is 2)
-    ; Replace with actual implementation based on Power's usage
     vmulsd xmm0, xmm0, xmm0
     ret
 

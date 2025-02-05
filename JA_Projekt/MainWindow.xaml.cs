@@ -34,7 +34,7 @@ namespace JA_Projekt
         }
 
         [DllImport(@"E:\JAProjekt\JA_Projekt\x64\Debug\JA_Asm.dll")]
-        public static extern void ApplyVignette(IntPtr bitmapBuffer, int img_width, int img_height, int stride, double maxR, double pow); //MODIFY THE VARS AS NEEDED
+        public static extern void ApplyVignette(IntPtr bitmapBuffer, int img_width, int img_height, int stride, double pow, double maxR);
 
 
         private void convert(object sender, RoutedEventArgs e)
