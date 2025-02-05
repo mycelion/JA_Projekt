@@ -72,7 +72,7 @@ namespace JA_Projekt
                             bitmap.Height,
                             bitmapData.Stride,
                             power,
-                            radius);
+                            radius * 316);
                     }
                     finally
                     {
