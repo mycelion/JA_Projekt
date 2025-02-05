@@ -19,10 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="JA_Asm.asm" />
+    <None Include="JA_Asm.def" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="JA_Asm.def" />
+    <MASM Include="JA_Asm.asm" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
