@@ -1,78 +1,64 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
-using System.Threading;
-using System.Windows.Media.Imaging;
-using System.Reflection.Emit;
-using System.Windows.Media.Effects;
 using System.Drawing.Imaging;
-using System.Windows.Media.Media3D;
+using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace JA_CSharp
 {
     public class CSharp_Class
     {
-        public int test(int a, int b)
+        public BitmapImage AddVignette(System.Drawing.Image srcImage, float radius, float power, int numThreads)
         {
-            return a + b;
-        }
-
-        public BitmapImage AddVignette(System.Drawing.Image srcImage, float radius, float power)
-        {
-            // Convert the System.Drawing.Image to a Bitmap
-            System.Drawing.Bitmap targetImg = new System.Drawing.Bitmap(srcImage);
-
+            Bitmap targetImg = new Bitmap(srcImage);
             int width = targetImg.Width;
             int height = targetImg.Height;
 
-            using (Graphics g = Graphics.FromImage(targetImg))
+            // Bezpośredni dostęp do danych pikseli
+            BitmapData bitmapData = targetImg.LockBits(
+                new Rectangle(0, 0, width, height),
+                ImageLockMode.ReadWrite,
+                PixelFormat.Format24bppRgb
+            );
+
+            unsafe
             {
-                // Create a radial gradient brush to simulate the vignette effect
-                using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
+                byte* ptr = (byte*)bitmapData.Scan0;
+                int stride = bitmapData.Stride;
+
+                // Obliczenia współczynnika równolegle
+                Parallel.For(0, height, new ParallelOptions { MaxDegreeOfParallelism = numThreads }, y =>
                 {
-                    // Adjust the ellipse size based on the radius parameter
-                    float ellipseWidth = width * radius;
-                    float ellipseHeight = width * radius;
-                    float ellipseX = (width - ellipseWidth) / 2;
-                    float ellipseY = (height - ellipseHeight) / 2;
+                    double centerY = height / 2.0;
+                    double centerX = width / 2.0;
+                    double maxRadius = Math.Min(width, height) * radius / 2.0;
 
-                    path.AddEllipse(ellipseX, ellipseY, ellipseWidth, ellipseHeight);
-
-                    // Calculate the transparency level based on the power parameter
-                    byte alpha = (byte)(255 * Math.Clamp(power, 0, 1)); // Ensure power is clamped between 0 and 1
-
-                    using (Region region = new Region())
+                    for (int x = 0; x < width; x++)
                     {
-                        // Set the region to everything outside the circle
-                        region.MakeInfinite();
-                        region.Exclude(path);
+                        // Oblicz odległość od środka
+                        double dx = (x - centerX);
+                        double dy = (y - centerY);
+                        double distance = Math.Sqrt(dx * dx + dy * dy);
 
-                        Brush brush = new SolidBrush(Color.FromArgb(alpha, 0, 0, 0));
-                        g.FillRegion(brush, region);
+                        // Oblicz współczynnik winiety
+                        double factor = Math.Max(0, 1 - (distance / maxRadius) * power);
+                        factor = Math.Clamp(factor, 0, 1);
+
+                        // Zastosuj do piksela (Format 24bppRgb: BGR)
+                        int offset = y * stride + x * 3;
+                        ptr[offset] = (byte)(ptr[offset] * factor);     // Blue
+                        ptr[offset + 1] = (byte)(ptr[offset + 1] * factor); // Green
+                        ptr[offset + 2] = (byte)(ptr[offset + 2] * factor); // Red
                     }
-
-                    using (var brush = new System.Drawing.Drawing2D.PathGradientBrush(path))
-                    {
-                        // Center color is fully transparent, edges are dark with the chosen opacity
-                        brush.CenterColor = System.Drawing.Color.FromArgb(0, 0, 0, 0); // Fully transparent
-                        brush.SurroundColors = new[] { System.Drawing.Color.FromArgb(alpha, 0, 0, 0) };
-
-                        // Set the center point of the gradient
-                        brush.CenterPoint = new System.Drawing.PointF(width / 2, height / 2);
-
-                        // Draw the gradient overlay
-                        g.FillRectangle(brush, 0, 0, width, height);
-                    }
-                }
+                });
             }
 
-            // Convert the Bitmap to a BitmapImage for WPF
+            targetImg.UnlockBits(bitmapData);
+
+            // Konwersja do BitmapImage
             using (var memoryStream = new System.IO.MemoryStream())
             {
-                targetImg.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Bmp);
+                targetImg.Save(memoryStream, ImageFormat.Bmp);
                 memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
 
                 BitmapImage bitmapImage = new BitmapImage();
@@ -80,7 +66,6 @@ namespace JA_CSharp
                 bitmapImage.StreamSource = memoryStream;
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.EndInit();
-
                 return bitmapImage;
             }
         }

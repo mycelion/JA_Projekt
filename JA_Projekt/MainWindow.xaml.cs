@@ -33,8 +33,16 @@ namespace JA_Projekt
             InitializeComponent();
         }
 
-        [DllImport(@"E:\JAProjekt\JA_Projekt\x64\Debug\JA_Asm.dll")]
-        public static extern void ApplyVignette(IntPtr bitmapBuffer, int img_width, int img_height, int stride, double pow, double maxR);
+        [DllImport(@"E:\JAProjekt\JA_Projekt\x64\Debug\JA_Asm.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ApplyVignette(
+            IntPtr bitmapBuffer,
+            int img_width,
+            int img_height,
+            int stride,
+            double pow,
+            double maxR,
+            int numThreads
+        );
 
 
         private void convert(object sender, RoutedEventArgs e)
@@ -42,6 +50,7 @@ namespace JA_Projekt
             DateTime dateTimePrev = DateTime.Now;
             float radius = (float)radiusSlider.Value;
             float power = (float)powerSlider.Value;
+            int threads = (int)threadSlider.Value;
 
             // Get the source image from sourcePic
             BitmapSource? sourceBitmap = sourcePic.Source as BitmapSource;
@@ -65,14 +74,14 @@ namespace JA_Projekt
 
                     try
                     {
-                        // Call ASM function
                         ApplyVignette(
                             bitmapData.Scan0,
                             bitmap.Width,
                             bitmap.Height,
                             bitmapData.Stride,
                             power,
-                            radius * 316);
+                            radius * 316,
+                            threads);
                     }
                     finally
                     {
@@ -88,7 +97,7 @@ namespace JA_Projekt
             {
                 CSharp_Class cSharp = new CSharp_Class();
                 System.Drawing.Image drawingImage = BitmapSourceToDrawingImage(sourceBitmap);
-                BitmapImage vignetteImage = cSharp.AddVignette(drawingImage, radius, power);
+                BitmapImage vignetteImage = cSharp.AddVignette(drawingImage, radius, power, threads);
                 resultPic.Source = vignetteImage;
             }
 
